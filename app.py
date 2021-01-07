@@ -9,7 +9,7 @@ CORS(app)
 
 
 data = pd.read_excel(r'data.xlsx')
-months_1 = data.iloc[18, 1:13]
+months = data.iloc[18, 1:13]
 income_1 = data.iloc[22, 1:13]
 total_food_1 = data.iloc[29, 1:13]
 total_utility_1 = data.iloc[33, 1:13]
@@ -22,20 +22,29 @@ income_2 = data.iloc[22, 14:26]
 
 
 
-@app.route("/")
+@app.route("/name")
 def home():
-    return ", ".join(months_1.tolist())
+    name = data.iloc[0, 0]
+    return {"name": name}
 
 
 @app.route("/income/<int:year>")
 def annual_income(year):
-    months = data.iloc[18, 1:13]
-
     income_splice = 1 + (12 * (year-1))
-    income = data.iloc[22, income_splice:(income_splice+12)]
+    income = data.iloc[22, income_splice:(income_splice+13)]
 
-    return {"months": months,
-            "income": income}
+    return {"months": months.tolist(),
+            "income": income.tolist()}
+
+
+@app.route("/stocks/<int:year>")
+def stock_returns(year):
+    stocks_splice = 1 + (12 * (year-1))
+    stocks = data.iloc[21, stocks_splice:(stocks_splice+13)]
+    
+    return {"months": months.tolist(),
+            "income": stocks.tolist()}
+
 
 
 
