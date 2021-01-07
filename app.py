@@ -1,7 +1,7 @@
-from flask import Flask, redirect, url_for, session, flash
+from flask import Flask, redirect, url_for, session, flash, request
 from flask_cors import CORS
 import pandas as pd
-import numpy as np
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -10,6 +10,9 @@ CORS(app)
 
 data = pd.read_excel(r'data.xlsx')
 months = data.iloc[18, 1:13]
+months_list = months.tolist()
+
+current_month = datetime.now().month
 
 
 def splice(x: int):
@@ -40,7 +43,7 @@ def annual_income(year):
             "total_income": income.tolist()}
 
 
-@app.route("/utility/<int:year")
+@app.route("/utility/<int:year>")
 def utility_costs(year):
     utility_splice = splice(year)
     water = data.iloc[31, utility_splice:(utility_splice+12)]
@@ -99,7 +102,7 @@ def others(year):
     other_splice = splice(year)
     other_expenses = data.iloc[45, other_splice:(other_splice+12)]
 
-    return {"data": "other",
+    return {"data": "months, other",
             "months": months.tolist(),
             "other": other_expenses.tolist()}
 
@@ -109,7 +112,7 @@ def total_expenses(year):
     total_splice = splice(year)
     total = data.iloc[47, total_splice:(total_splice+12)]
 
-    return {"data": "total",
+    return {"data": "months, total",
             "months": months.tolist(),
             "total": total.tolist()}
 
@@ -120,12 +123,14 @@ def total_expenses(year):
 def subs():
     things = data.iloc[40:43, 0]
 
-    return {"data": "subscription services",
+    return {"data": "services",
             "services": things.tolist()}
 
 
+@app.route("/")
+def test():
+    name = request.args.get("name")
+    age = request.args.get("age")
+    return f"{name}\n{age}\n{datetime.now().month}\n{datetime.now().year}"
 
 
-
-# if __name__ == "__main__":
-#     app.run()
