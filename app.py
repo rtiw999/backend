@@ -30,7 +30,7 @@ def home():
 
 @app.route("/income/<int:year>")
 def annual_income(year):
-    income_splice = 1 + (12 * (year-1))
+    income_splice = 1 + (13 * (year-1))
     income = data.iloc[22, income_splice:(income_splice+13)]
 
     return {"months": months.tolist(),
@@ -39,11 +39,19 @@ def annual_income(year):
 
 @app.route("/stocks/<int:year>")
 def stock_returns(year):
-    stocks_splice = 1 + (12 * (year-1))
+    stocks_splice = 1 + (13 * (year-1))
     stocks = data.iloc[21, stocks_splice:(stocks_splice+13)]
-    
+
     return {"months": months.tolist(),
-            "income": stocks.tolist()}
+            "stocks": stocks.tolist()}
+
+@app.route("/transportation/<int:year>")
+def transport(year):
+    transport_splice = 1 + (13 * (year-1))
+    trans = data.iloc[38, transport_splice:(transport_splice+13)]
+
+    return {"months": months.tolist(),
+            "transportation": trans.tolist()}
 
 
 
