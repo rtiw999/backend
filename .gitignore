@@ -3,3 +3,4 @@ test.py
 try.py
 workspace.xml
 __pycache__
+.DS_Store
