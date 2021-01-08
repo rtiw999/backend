@@ -1,7 +1,9 @@
 from flask import Flask, redirect, url_for, session, flash, request
 from flask_cors import CORS
 import pandas as pd
+import numpy as np
 from datetime import datetime
+import operator
 
 
 app = Flask(__name__)
@@ -9,30 +11,6 @@ CORS(app)
 
 
 data = pd.read_excel(r'data.xlsx')
-
-# months_map = {0: "January",
-#               1: "February",
-#               2: "March",
-#               3: "April",
-#               4: "May",
-#               5: "June",
-#               6: "July",
-#               7: "August",
-#               8: "September",
-#               9: "October",
-#               10: "November",
-#               11: "December"}
-#
-# current_month = 11
-# current_year = 2                        # year set to 2
-#
-# def make_months_list(x: int):
-#     rtn = []
-#     count = current_month - (x % 12)
-#     for i in range(x+1):
-#         rtn.append(months_map[count % 12])
-#         count += 1
-#     return rtn
 
 current_month = 12                      # month is December
 current_year = 2                        # year is 2020
@@ -139,6 +117,31 @@ def total_expenses(months_back):
     return {"data": "months, total",
             "months": months.tolist(),
             "total": total.tolist()}
+
+
+@app.route("/difference/<int:months_back>")
+def budget_expenses(months_back):
+    months = data.iloc[18, end-months_back:end].tolist()
+    income = data.iloc[22, end-months_back:end].tolist()
+    expenses = data.iloc[47, end-months_back:end].tolist()
+
+    difference_list = list(map(operator.sub, income, expenses))
+    num_list = [i for i in range(months_back)]
+
+    my_date = datetime.now()
+    months.append(my_date.strftime("%B"))
+
+    difference_np = np.array(difference_list)
+    num_np = np.array(num_list)
+
+    m, b = np.polyfit(num_np, difference_np, 1)
+
+
+    difference_list.append(m*(num_list[-1]+1) + b)
+
+    return {"data": "months, total",
+            "months": months,
+            "difference": difference_list}
 
 
 
