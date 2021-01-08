@@ -9,11 +9,35 @@ CORS(app)
 
 
 data = pd.read_excel(r'data.xlsx')
-months = data.iloc[18, 1:13]
-months_list = months.tolist()
 
-current_month = datetime.now().month
+# months_map = {0: "January",
+#               1: "February",
+#               2: "March",
+#               3: "April",
+#               4: "May",
+#               5: "June",
+#               6: "July",
+#               7: "August",
+#               8: "September",
+#               9: "October",
+#               10: "November",
+#               11: "December"}
+#
+# current_month = 11
+# current_year = 2                        # year set to 2
+#
+# def make_months_list(x: int):
+#     rtn = []
+#     count = current_month - (x % 12)
+#     for i in range(x+1):
+#         rtn.append(months_map[count % 12])
+#         count += 1
+#     return rtn
 
+current_month = 12                      # month is December
+current_year = 2                        # year is 2020
+
+end = 1 + (12 * (current_year-1)) + current_month
 
 def splice(x: int):
     return 1 + (13 * (x-1))
@@ -27,13 +51,13 @@ def home():
             "name": name}
 
 
-@app.route("/income/<int:year>")        # gets the job income, drop shipping income, stock return, and total income
-def annual_income(year):
-    income_splice = splice(year)
-    income = data.iloc[22, income_splice:(income_splice+12)]
-    job = data.iloc[19, income_splice:(income_splice+12)]
-    drop = data.iloc[20, income_splice:(income_splice+12)]
-    stocks = data.iloc[21, income_splice:(income_splice + 12)]
+@app.route("/income/<int:months_back>")        # gets the job income, drop shipping income, stock return, and total income
+def annual_income(months_back):
+    months = data.iloc[18, end-months_back:end]
+    income = data.iloc[22, end-months_back:end]
+    job = data.iloc[19, end-months_back:end]
+    drop = data.iloc[20, end-months_back:end]
+    stocks = data.iloc[21, end-months_back:end]
 
     return {"data": "months, job, drop, stocks, total_income",
             "months": months.tolist(),
@@ -43,12 +67,12 @@ def annual_income(year):
             "total_income": income.tolist()}
 
 
-@app.route("/utility/<int:year>")
-def utility_costs(year):
-    utility_splice = splice(year)
-    water = data.iloc[31, utility_splice:(utility_splice+12)]
-    power = data.iloc[32, utility_splice:(utility_splice+12)]
-    total_utility = data.iloc[33, utility_splice:(utility_splice+12)]
+@app.route("/utility/<int:months_back>")
+def utility_costs(months_back):
+    months = data.iloc[18, end-months_back:end]
+    water = data.iloc[31, end-months_back:end]
+    power = data.iloc[32, end-months_back:end]
+    total_utility = data.iloc[33, end-months_back:end]
 
     return {"data": "months, water, power, total_utility",
             "months": months.tolist(),
@@ -57,12 +81,12 @@ def utility_costs(year):
             "total_utility": total_utility.tolist()}
 
 
-@app.route("/food/<int:year>")
-def food_costs(year):
-    food_splice = splice(year)
-    groceries = data.iloc[27, food_splice:(food_splice+12)]
-    eating_out = data.iloc[28, food_splice:(food_splice+12)]
-    total_food = data.iloc[29, food_splice:(food_splice+12)]
+@app.route("/food/<int:months_back>")
+def food_costs(months_back):
+    months = data.iloc[18, end-months_back:end]
+    groceries = data.iloc[27, end-months_back:end]
+    eating_out = data.iloc[28, end-months_back:end]
+    total_food = data.iloc[29, end-months_back:end]
 
     return {"data": "months, groceries, eating_out, total_food",
             "months": months.tolist(),
@@ -71,13 +95,13 @@ def food_costs(year):
             "total_food": total_food.tolist()}
 
 
-@app.route("/transportation/<int:year>")
-def transport(year):
-    transport_splice = splice(year)
-    public = data.iloc[35, transport_splice:(transport_splice+12)]
-    flights = data.iloc[36, transport_splice:(transport_splice+12)]
-    rideshare = data.iloc[37, transport_splice:(transport_splice+12)]
-    total_transportation = data.iloc[38, transport_splice:(transport_splice+12)]
+@app.route("/transportation/<int:months_back>")
+def transport(months_back):
+    months = data.iloc[18, end-months_back:end]
+    public = data.iloc[35, end-months_back:end]
+    flights = data.iloc[36, end-months_back:end]
+    rideshare = data.iloc[37, end-months_back:end]
+    total_transportation = data.iloc[38, end-months_back:end]
 
     return {"data": "months, public, flights, rideshare, transportation",
             "months": months.tolist(),
@@ -87,30 +111,30 @@ def transport(year):
             "total_transportation": total_transportation.tolist()}
 
 
-@app.route("/subscriptions/<int:year>")
-def sub(year):
-    subscribe_splice = splice(year)
-    subscribe = data.iloc[43, subscribe_splice:(subscribe_splice+12)]
+@app.route("/subscriptions/<int:months_back>")
+def sub(months_back):
+    months = data.iloc[18, end-months_back:end]
+    subscribe = data.iloc[43, end-months_back:end]
 
     return {"data": "months, subscriptions",
             "months": months.tolist(),
             "subscriptions": subscribe.tolist()}
 
 
-@app.route("/other/<int:year>")
-def others(year):
-    other_splice = splice(year)
-    other_expenses = data.iloc[45, other_splice:(other_splice+12)]
+@app.route("/other/<int:months_back>")
+def others(months_back):
+    months = data.iloc[18, end-months_back:end]
+    other_expenses = data.iloc[45, end-months_back:end]
 
     return {"data": "months, other",
             "months": months.tolist(),
             "other": other_expenses.tolist()}
 
 
-@app.route("/total/<int:year>")
-def total_expenses(year):
-    total_splice = splice(year)
-    total = data.iloc[47, total_splice:(total_splice+12)]
+@app.route("/total/<int:months_back>")
+def total_expenses(months_back):
+    months = data.iloc[18, end-months_back:end]
+    total = data.iloc[47, end-months_back:end]
 
     return {"data": "months, total",
             "months": months.tolist(),
@@ -131,6 +155,6 @@ def subs():
 def test():
     name = request.args.get("name")
     age = request.args.get("age")
-    return f"{name}\n{age}\n{datetime.now().month}\n{datetime.now().year}"
+    return f"{name}\n{age}\n{datetime.now().month}\n{datetime.now().year}\n{end}"
 
 
