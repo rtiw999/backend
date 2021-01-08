@@ -139,7 +139,7 @@ def budget_expenses(months_back):
 
     difference_list.append(m*(num_list[-1]+1) + b)
 
-    return {"data": "months, total",
+    return {"data": "months, difference",
             "months": months,
             "difference": difference_list}
 
